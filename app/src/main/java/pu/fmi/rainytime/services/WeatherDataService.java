@@ -32,7 +32,7 @@ public class WeatherDataService {
 
     public void getCity(String cityName,VolleyResponseListener volleyResponseListener) {
         City[] city = new City[1];
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=168bd05ec573baa40ca07ac0fa585cfb";
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             String lon = "";
             String lat = "";
