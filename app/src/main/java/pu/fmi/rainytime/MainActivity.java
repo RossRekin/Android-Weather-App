@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import pu.fmi.rainytime.models.City;
 import pu.fmi.rainytime.models.VolleySingleton;
+import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
 
 public class MainActivity extends AppCompatActivity {
@@ -62,13 +63,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onResponse(City city) {
-                        Toast.makeText(MainActivity.this, city.getLatitude(), Toast.LENGTH_SHORT).show();
+                    public void onResponse(WeatherReport report) {
+                        locationTV.setText(report.getCity().getName());
+                        temperatureTV.setText(String.valueOf(report.getTemp()+" °C"));
+                        forecastTV.setText(report.getWeather());
+                        dateTV.setText(report.getTimestamp());
                     }
                 });
-                //City city = weatherDataService.getCity(cityName);
-                //
-
             }
         });
 
