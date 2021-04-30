@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -22,66 +23,128 @@ import pu.fmi.rainytime.models.WeatherReport;
 
 public class WeatherDataService {
     Context context;
-
+    private static final String ACCESS_TOKEN = "";
 
     public WeatherDataService(Context context) {
         this.context = context;
     }
 
     // Used for callback
-    public interface VolleyResponseListener {
+    public interface CityCoordsResponse {
         void onError(String message);
-        void onResponse(WeatherReport report);
+        void onResponse(City city);
+    }
+    public interface CurrentWeatherResponse {
+        void onError(String message);
+        void onResponse(WeatherReport weatherReport);
+    }
+    public interface WeeklyWeatherResponse {
+        void onError(String message);
+        void onResponse(ArrayList<WeatherReport> reports);
     }
 
 
-    public void getCity(String cityName,VolleyResponseListener volleyResponseListener) {
+    public void getCityCoords(String cityName, CityCoordsResponse cityCoordsResponse) {
         City[] city = new City[1];
-        WeatherReport[] report = new WeatherReport[1];
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=";
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid="+ ACCESS_TOKEN;
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            String lon,lat,weather,timestamp = "";
-            double temperature = 0;
-            Integer timezone = 0;
+            String lon,lat = "";
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     JSONObject coord = response.getJSONObject("coord");
-                    JSONObject weatherObject = response.getJSONArray("weather").getJSONObject(0);
-                    JSONObject temperatureObject = response.getJSONObject("main");
                     lat = coord.getString("lat");
                     lon = coord.getString("lon");
-                    weather= weatherObject.getString("main");
-                    temperature = temperatureObject.getDouble("temp")- 272.15;
                     city[0] = new City(cityName,lat,lon);
-                    timezone = response.getInt("timezone");
-                    timestamp = calculateTime(timezone);
-                    report[0] = new WeatherReport(city[0],weather,temperature,timestamp);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                volleyResponseListener.onResponse(report[0]);
+                cityCoordsResponse.onResponse(city[0]);
             }
         }, error -> {
-            //Toast.makeText(context, "Something went wrong.", Toast.LENGTH_SHORT).show();
-            volleyResponseListener.onError("Something went wrong.");
+            cityCoordsResponse.onError("Something went wrong.");
         });
-
 
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
+    public void getCurrentWeather(String cityName, CurrentWeatherResponse currentWeatherResponse) {
+        WeatherReport weatherReport= new WeatherReport();
 
+        this.getCityCoords(cityName,new  CityCoordsResponse(){
+            @Override
+            public void onError(String message) {
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onResponse(City responseCity) {
+                String url = "https://api.openweathermap.org/data/2.5/onecall?lat="+responseCity.getLatitude() +"&lon="+responseCity.getLongitude()+"&appid="+ ACCESS_TOKEN;
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    String timestamp,weather = "";
+                    double temperature = 0;
+                    Integer timezone = 0;
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject currentWeatherData = response.getJSONObject("current");
+                            temperature = currentWeatherData.getDouble("temp") - 272.15;
+                            weather = currentWeatherData.getJSONArray("weather").getJSONObject(0).getString("main");
+                            timezone = response.getInt("timezone_offset");
+                            timestamp = calculateTime(timezone);
+                            weatherReport.setCity(responseCity);
+                            weatherReport.setTemp(temperature);
+                            weatherReport.setTimestamp(timestamp);
+                            weatherReport.setWeather(weather);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        currentWeatherResponse.onResponse(weatherReport);
+                    }}, error -> {
+                    currentWeatherResponse.onError("Something went wrong."); });
 
+                VolleySingleton.getInstance(context).addToRequestQueue(request);
+            }
+        });
+    }
 
+    // TODO
+    public void getWeeklyWeather(String cityName, WeeklyWeatherResponse weeklyWeatherResponse) {
+        ArrayList<WeatherReport> reports= new ArrayList<WeatherReport>();
 
+        this.getCityCoords(cityName,new  CityCoordsResponse(){
+            @Override
+            public void onError(String message) {
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onResponse(City responseCity) {
+                String url = "https://api.openweathermap.org/data/2.5/onecall?lat="+responseCity.getLatitude() +"&lon="+responseCity.getLongitude()+"&appid="+ ACCESS_TOKEN;
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    String timestamp,weather = "";
+                    double temperature = 0;
+                    Integer timezone = 0;
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray weeklyWeatherData = response.getJSONArray("daily");
+                            Toast.makeText(context, "Something ?", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        weeklyWeatherResponse.onResponse(reports);
+                    }}, error -> {
+                    weeklyWeatherResponse.onError("Something went wrong."); });
 
+                VolleySingleton.getInstance(context).addToRequestQueue(request);
+            }
+        });
+    }
 
-    public String calculateTime(int timezoneShift){
+    public String calculateTime(int timezoneOffset){
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.add(Calendar.SECOND, timezoneShift);
+        calendar.add(Calendar.SECOND, timezoneOffset);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String result = sdf.format(calendar.getTime());
         return result;

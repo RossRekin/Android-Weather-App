@@ -6,6 +6,9 @@ public class WeatherReport {
     private double temp;
     private String timestamp;
 
+    public WeatherReport() {
+
+    }
     public WeatherReport(City city, String weather, double temp, String timestamp) {
         this.city = city;
         this.weather = weather;

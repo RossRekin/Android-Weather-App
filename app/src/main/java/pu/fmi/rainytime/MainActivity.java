@@ -9,21 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import pu.fmi.rainytime.models.City;
-import pu.fmi.rainytime.models.VolleySingleton;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
 
@@ -56,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 String cityName = cityET.getText().toString();
 
 
-                weatherDataService.getCity(cityName, new WeatherDataService.VolleyResponseListener() {
+                weatherDataService.getCurrentWeather(cityName, new WeatherDataService.CurrentWeatherResponse() {
                     @Override
                     public void onError(String message) {
                         Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -70,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
                         dateTV.setText(report.getTimestamp());
                     }
                 });
+
+
             }
         });
 

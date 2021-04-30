@@ -10,6 +10,10 @@ public class City {
         return name;
     }
 
+    public City() {
+
+    }
+
     public City(String name, String latitude, String longitude) {
         this.name = name;
         this.latitude = latitude;
