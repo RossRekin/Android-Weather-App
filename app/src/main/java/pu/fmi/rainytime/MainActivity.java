@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import pu.fmi.rainytime.models.City;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
@@ -41,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String cityName = cityET.getText().toString();
 
-
                 weatherDataService.getCurrentWeather(cityName, new WeatherDataService.CurrentWeatherResponse() {
                     @Override
                     public void onError(String message) {
@@ -56,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
                         dateTV.setText(report.getTimestamp());
                     }
                 });
-
-
             }
         });
 
@@ -73,9 +72,23 @@ public class MainActivity extends AppCompatActivity {
         weeklyForecastB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "weekly forecast test", Toast.LENGTH_SHORT).show();
+                String cityName = locationTV.getText().toString();
+                weatherDataService.getWeeklyWeather(cityName, new WeatherDataService.WeeklyWeatherResponse() {
+                    @Override
+                    public void onError(String message) {
+                        Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                    // TODO -> make a new activity,and show data there
+                    @Override
+                    public void onResponse(ArrayList<WeatherReport> reports) {
+                        Toast.makeText(MainActivity.this, reports.get(1).getCity().getName()+" "+reports.get(1).getWeather(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
+
         // TODO
         checKHistoryB.setOnClickListener(new View.OnClickListener() {
             @Override
