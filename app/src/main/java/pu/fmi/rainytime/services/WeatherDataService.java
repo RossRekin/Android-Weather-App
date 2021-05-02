@@ -98,7 +98,7 @@ public class WeatherDataService {
                         try {
                             JSONObject currentWeatherData = response.getJSONObject("current");
                             temperature = currentWeatherData.getDouble("temp") - 272.15;
-                            temperature = Math.round(temperature*100.0)/100.0;
+                            temperature = Math.round(temperature * 100.0) / 100.0;
                             weather = currentWeatherData.getJSONArray("weather").getJSONObject(0).getString("main");
                             timezone = response.getInt("timezone_offset");
                             timestamp = calculateTime(timezone);
@@ -136,6 +136,8 @@ public class WeatherDataService {
                     String timestamp, weather = "";
                     double temperature = 0;
                     long dt = 0;
+                    int timezone_offset = 0;
+
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
@@ -143,11 +145,12 @@ public class WeatherDataService {
                             for (int i = 0; i < 8; i++) {
                                 JSONObject currentDay = weeklyWeatherData.getJSONObject(i);
                                 temperature = currentDay.getJSONObject("temp").getDouble("day");
-                                temperature = Math.round(temperature*100.0)/100.0 - 272.15;
+                                temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
                                 weather = currentDay.getJSONArray("weather").getJSONObject(0).getString("main");
                                 dt = currentDay.getLong("dt");
-                                timestamp = calculateDateFromUnixTime(dt,"dd/MM/yyyy");
-                                WeatherReport currentReport = new WeatherReport(responseCity,weather,temperature,timestamp);
+                                timezone_offset = response.getInt("timezone_offset");
+                                timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy", timezone_offset);
+                                WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
                                 reports.add(currentReport);
                             }
                             //Toast.makeText(context, weeklyWeatherData.getJSONObject(2).getString("dt"), Toast.LENGTH_SHORT).show();
@@ -181,6 +184,8 @@ public class WeatherDataService {
                     String timestamp, weather = "";
                     double temperature = 0;
                     long dt = 0;
+                    int timezone_offset = 0;
+
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
@@ -188,11 +193,12 @@ public class WeatherDataService {
                             for (int i = 0; i < 24; i++) {
                                 JSONObject currentHour = hourlyWeatherData.getJSONObject(i);
                                 temperature = currentHour.getDouble("temp");
-                                temperature = Math.round(temperature*100.0)/100.0 - 272.15;
+                                temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
                                 weather = currentHour.getJSONArray("weather").getJSONObject(0).getString("main");
                                 dt = currentHour.getLong("dt");
-                                timestamp = calculateDateFromUnixTime(dt,"dd/MM/yyyy HH:mm:ss");
-                                WeatherReport currentReport = new WeatherReport(responseCity,weather,temperature,timestamp);
+                                timezone_offset = response.getInt("timezone_offset");
+                                timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy HH:mm", timezone_offset);
+                                WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
                                 reports.add(currentReport);
                             }
 
@@ -211,7 +217,6 @@ public class WeatherDataService {
     }
 
 
-
     private String calculateTime(int timezoneOffset) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -220,11 +225,17 @@ public class WeatherDataService {
         String result = sdf.format(calendar.getTime());
         return result;
     }
-    private String calculateDateFromUnixTime(long unixSeconds,String dateFormat){
-        java.util.Date dateTime=new java.util.Date(unixSeconds*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat(dateFormat);
-        String formattedDate = sdf.format(dateTime);
-        return  formattedDate;
+
+    private String calculateDateFromUnixTime(long unixSeconds, String dateFormat, int timezone_offset) {
+        Date date = new Date(unixSeconds * 1000L);
+        SimpleDateFormat jdf = new SimpleDateFormat(dateFormat);
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTime(date);
+        calendar.add(Calendar.SECOND, timezone_offset);
+        String result = jdf.format(calendar.getTime());
+        return result;
     }
+
 
 }

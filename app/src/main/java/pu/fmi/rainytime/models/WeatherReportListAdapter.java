@@ -63,7 +63,7 @@ public class WeatherReportListAdapter extends BaseAdapter {
             result=convertView;
         }
 
-        viewHolder.degreesTV.setText(Double.toString(reports.get(position).getTemp()));
+        viewHolder.degreesTV.setText(Double.toString(reports.get(position).getTemp())+ " °C");
         viewHolder.weatherTV.setText(reports.get(position).getWeather());
         viewHolder.dateTV.setText(reports.get(position).getTimestamp());
         viewHolder.weatherIconIV.setImageResource(images[0]);
