@@ -43,7 +43,7 @@ public class WeatherDataService {
         void onResponse(WeatherReport weatherReport);
     }
 
-    public interface WeeklyWeatherResponse {
+    public interface PeriodicWeatherForecastResponse {
         void onError(String message);
 
         void onResponse(ArrayList<WeatherReport> reports);
@@ -120,7 +120,7 @@ public class WeatherDataService {
         });
     }
 
-    public void getWeeklyWeather(String cityName, WeeklyWeatherResponse weeklyWeatherResponse) {
+    public void getWeeklyWeather(String cityName, PeriodicWeatherForecastResponse weeklyWeatherResponse) {
         ArrayList<WeatherReport> reports = new ArrayList<WeatherReport>();
 
         this.getCityCoords(cityName, new CityCoordsResponse() {
@@ -140,13 +140,13 @@ public class WeatherDataService {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONArray weeklyWeatherData = response.getJSONArray("daily");
-                            for (int i = 0; i <= 8; i++) {
+                            for (int i = 0; i < 8; i++) {
                                 JSONObject currentDay = weeklyWeatherData.getJSONObject(i);
                                 temperature = currentDay.getJSONObject("temp").getDouble("day");
                                 temperature = Math.round(temperature*100.0)/100.0 - 272.15;
                                 weather = currentDay.getJSONArray("weather").getJSONObject(0).getString("main");
                                 dt = currentDay.getLong("dt");
-                                timestamp = calculateDateFromUnixTime(dt);
+                                timestamp = calculateDateFromUnixTime(dt,"dd/MM/yyyy");
                                 WeatherReport currentReport = new WeatherReport(responseCity,weather,temperature,timestamp);
                                 reports.add(currentReport);
                             }
@@ -165,6 +165,53 @@ public class WeatherDataService {
         });
     }
 
+    public void getHourlyWeather(String cityName, PeriodicWeatherForecastResponse hourlyWeatherResponse) {
+        ArrayList<WeatherReport> reports = new ArrayList<WeatherReport>();
+
+        this.getCityCoords(cityName, new CityCoordsResponse() {
+            @Override
+            public void onError(String message) {
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(City responseCity) {
+                String url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + responseCity.getLatitude() + "&lon=" + responseCity.getLongitude() + "&appid=" + ACCESS_TOKEN;
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    String timestamp, weather = "";
+                    double temperature = 0;
+                    long dt = 0;
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray hourlyWeatherData = response.getJSONArray("hourly");
+                            for (int i = 0; i < 24; i++) {
+                                JSONObject currentHour = hourlyWeatherData.getJSONObject(i);
+                                temperature = currentHour.getDouble("temp");
+                                temperature = Math.round(temperature*100.0)/100.0 - 272.15;
+                                weather = currentHour.getJSONArray("weather").getJSONObject(0).getString("main");
+                                dt = currentHour.getLong("dt");
+                                timestamp = calculateDateFromUnixTime(dt,"dd/MM/yyyy HH:mm:ss");
+                                WeatherReport currentReport = new WeatherReport(responseCity,weather,temperature,timestamp);
+                                reports.add(currentReport);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        hourlyWeatherResponse.onResponse(reports);
+                    }
+                }, error -> {
+                    hourlyWeatherResponse.onError("Something went wrong.");
+                });
+
+                VolleySingleton.getInstance(context).addToRequestQueue(request);
+            }
+        });
+    }
+
+
+
     private String calculateTime(int timezoneOffset) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -173,11 +220,11 @@ public class WeatherDataService {
         String result = sdf.format(calendar.getTime());
         return result;
     }
-    private String calculateDateFromUnixTime(long unixSeconds){
-        Date date = new java.util.Date(unixSeconds*1000L);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-4"));
-        String formattedDate = sdf.format(date);
-        return formattedDate;
+    private String calculateDateFromUnixTime(long unixSeconds,String dateFormat){
+        java.util.Date dateTime=new java.util.Date(unixSeconds*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat(dateFormat);
+        String formattedDate = sdf.format(dateTime);
+        return  formattedDate;
     }
+
 }

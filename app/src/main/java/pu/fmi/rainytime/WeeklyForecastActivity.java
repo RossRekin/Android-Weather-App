@@ -3,13 +3,10 @@ package pu.fmi.rainytime;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.models.WeatherReportListAdapter;
@@ -28,7 +25,7 @@ public class WeeklyForecastActivity extends AppCompatActivity {
         String cityName = getIntent().getStringExtra("cityName");
         final WeatherDataService weatherDataService = new WeatherDataService(WeeklyForecastActivity.this);
 
-        weatherDataService.getWeeklyWeather(cityName, new WeatherDataService.WeeklyWeatherResponse() {
+        weatherDataService.getWeeklyWeather(cityName, new WeatherDataService.PeriodicWeatherForecastResponse() {
             @Override
             public void onError(String message) {
                 Toast.makeText(WeeklyForecastActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();

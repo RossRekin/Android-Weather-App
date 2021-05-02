@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import pu.fmi.rainytime.models.City;
+import pu.fmi.rainytime.models.HourlyForecastActivity;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
 
@@ -65,11 +66,13 @@ public class MainActivity extends AppCompatActivity {
         dailyForecastB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "daily forecast test", Toast.LENGTH_SHORT).show();
+                String cityName = locationTV.getText().toString();
+                Intent hourlyForecastIntent = new Intent(MainActivity.this, HourlyForecastActivity.class);
+                hourlyForecastIntent.putExtra("cityName",cityName);
+                startActivity(hourlyForecastIntent);
             }
         });
 
-        // TODO
         weeklyForecastB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

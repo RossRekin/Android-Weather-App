@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RainyTime"
         android:usesCleartextTraffic="true">
-        <activity android:name=".WeeklyForecastActivity"></activity>
+        <activity android:name=".models.HourlyForecastActivity"></activity>
+        <activity android:name=".WeeklyForecastActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
