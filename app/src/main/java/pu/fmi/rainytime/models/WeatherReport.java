@@ -47,4 +47,9 @@ public class WeatherReport {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString(){
+        return  getCity().getName();
+    }
 }

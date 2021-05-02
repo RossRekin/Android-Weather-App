@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/weatherIconImageView"
+        android:src="@drawable/weathericontest"
+        android:layout_width="80dp"
+        android:layout_height="80dp" />
+
+    <TextView
+        android:id="@+id/degreesTextView"
+        android:text="30 °C"
+        android:textSize="20sp"
+        android:layout_marginTop="8dp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/WeatherIconIV"
+        android:layout_toEndOf="@+id/weatherIconImageView"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:id="@+id/weatherTextView"
+        android:text="Sunny"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/degreesTextView"
+        android:layout_alignLeft="@+id/degreesTextView"
+        android:layout_alignStart="@+id/degreesTextView" />
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:text="20/7/2021"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weatherTextView"
+        android:layout_alignLeft="@+id/weatherTextView"
+        android:layout_alignStart="@+id/weatherTextView" />
+
+
+</RelativeLayout>

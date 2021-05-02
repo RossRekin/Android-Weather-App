@@ -143,7 +143,7 @@ public class WeatherDataService {
                             for (int i = 0; i <= 8; i++) {
                                 JSONObject currentDay = weeklyWeatherData.getJSONObject(i);
                                 temperature = currentDay.getJSONObject("temp").getDouble("day");
-                                temperature = Math.round(temperature*100.0)/100.0;
+                                temperature = Math.round(temperature*100.0)/100.0 - 272.15;
                                 weather = currentDay.getJSONArray("weather").getJSONObject(0).getString("main");
                                 dt = currentDay.getLong("dt");
                                 timestamp = calculateDateFromUnixTime(dt);
@@ -173,8 +173,7 @@ public class WeatherDataService {
         String result = sdf.format(calendar.getTime());
         return result;
     }
-    private String calculateDateFromUnixTime(long unixTime){
-        long unixSeconds = 1619780400;
+    private String calculateDateFromUnixTime(long unixSeconds){
         Date date = new java.util.Date(unixSeconds*1000L);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
         sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-4"));

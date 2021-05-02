@@ -2,6 +2,7 @@ package pu.fmi.rainytime;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -73,19 +74,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String cityName = locationTV.getText().toString();
-                weatherDataService.getWeeklyWeather(cityName, new WeatherDataService.WeeklyWeatherResponse() {
-                    @Override
-                    public void onError(String message) {
-                        Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                    }
-
-
-                    // TODO -> make a new activity,and show data there
-                    @Override
-                    public void onResponse(ArrayList<WeatherReport> reports) {
-                        Toast.makeText(MainActivity.this, reports.get(1).getCity().getName()+" "+reports.get(1).getWeather(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Intent weeklyForecastIntent = new Intent(MainActivity.this, WeeklyForecastActivity.class);
+                weeklyForecastIntent.putExtra("cityName",cityName);
+                startActivity(weeklyForecastIntent);
             }
         });
 
