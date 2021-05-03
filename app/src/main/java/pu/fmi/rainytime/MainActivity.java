@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pu.fmi.rainytime.models.IconPicker;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
 
@@ -18,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
     EditText cityET;
     TextView locationTV, temperatureTV, forecastTV, dateTV;
     Button dailyForecastB, weeklyForecastB, showForecastB, checkHistoryB;
+    ImageView forecastIV;
     final WeatherDataService weatherDataService = new WeatherDataService(MainActivity.this);
+    final IconPicker iconPicker = new IconPicker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         checkHistoryB = findViewById(R.id.checkHistoryButton);
         weeklyForecastB = findViewById(R.id.weekForecastButton);
         showForecastB = findViewById(R.id.showForecastButton);
-
+        forecastIV = findViewById(R.id.forecastImageView);
         getCurrentWeather("Sofia");
 
 
@@ -81,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         temperatureTV.setText(String.valueOf(report.getTemp() + " °C"));
         forecastTV.setText(report.getWeather());
         dateTV.setText(report.getTimestamp());
+        int image = iconPicker.pickIcon(report.getWeather(),report.getTimestamp());
+        forecastIV.setImageResource(image);
     }
 
     private void getCurrentWeather(String cityName) {

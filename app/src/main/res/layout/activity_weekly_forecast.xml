@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeeklyForecastActivity">
+    tools:context=".WeeklyForecastActivity"
+    android:background="@color/darkblue">
 
     <ListView
         android:id="@+id/weeklyForecastListView"

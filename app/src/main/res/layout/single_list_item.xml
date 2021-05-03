@@ -6,12 +6,13 @@
 
     <ImageView
         android:id="@+id/weatherIconImageView"
-        android:src="@drawable/weathericontest"
+        android:src="@drawable/thunderstorm"
         android:layout_width="80dp"
         android:layout_height="80dp" />
 
     <TextView
         android:id="@+id/degreesTextView"
+        android:textColor="@color/white"
         android:text="30 °C"
         android:textSize="20sp"
         android:layout_marginTop="8dp"
@@ -26,6 +27,7 @@
 
     <TextView
         android:id="@+id/weatherTextView"
+        android:textColor="@color/white"
         android:text="Sunny"
         android:textSize="14sp"
         android:maxLines="1"
@@ -37,6 +39,7 @@
 
     <TextView
         android:id="@+id/dateTextView"
+        android:textColor="@color/white"
         android:text="20/7/2021"
         android:textSize="14sp"
         android:maxLines="1"

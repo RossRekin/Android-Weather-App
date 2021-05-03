@@ -16,7 +16,6 @@ import pu.fmi.rainytime.services.WeatherDataService;
 public class WeeklyForecastActivity extends AppCompatActivity {
     ListView weeklyForecastLV;
     WeatherReportListAdapter listAdapter;
-    int[] images = {R.drawable.weathericontest};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +32,8 @@ public class WeeklyForecastActivity extends AppCompatActivity {
             }
             @Override
             public void onResponse(ArrayList<WeatherReport> reports) {
-                //Toast.makeText(WeeklyForecastActivity.this, reports.get(1).getCity().getName()+" "+reports.get(1).getWeather(), Toast.LENGTH_SHORT).show();
-                //ArrayAdapter arrayAdapter = new ArrayAdapter(WeeklyForecastActivity.this, android.R.layout.simple_list_item_1,reports);
-                //weeklyForecastLV.setAdapter(arrayAdapter);
                 weeklyForecastLV = (ListView)findViewById(R.id.weeklyForecastListView);
-                listAdapter = new WeatherReportListAdapter(WeeklyForecastActivity.this,reports,images);
+                listAdapter = new WeatherReportListAdapter(WeeklyForecastActivity.this,reports);
                 weeklyForecastLV.setAdapter(listAdapter);
             }
         }, Period.WEEKLY);

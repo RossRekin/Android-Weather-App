@@ -17,7 +17,6 @@ public class HourlyForecastActivity extends AppCompatActivity {
 
     ListView hourlyForecastLV;
     WeatherReportListAdapter listAdapter;
-    int[] images = {R.drawable.weathericontest};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +35,7 @@ public class HourlyForecastActivity extends AppCompatActivity {
             @Override
             public void onResponse(ArrayList<WeatherReport> reports) {
                 hourlyForecastLV = (ListView) findViewById(R.id.hourlyForecastListView);
-                listAdapter = new WeatherReportListAdapter(HourlyForecastActivity.this, reports, images);
+                listAdapter = new WeatherReportListAdapter(HourlyForecastActivity.this, reports);
                 hourlyForecastLV.setAdapter(listAdapter);
             }
         }, Period.HOURLY);

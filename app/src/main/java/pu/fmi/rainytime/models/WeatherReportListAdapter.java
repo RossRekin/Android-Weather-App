@@ -16,12 +16,12 @@ public class WeatherReportListAdapter extends BaseAdapter {
 
     Context context;
     private final ArrayList<WeatherReport> reports;
-    private final int [] images;
+    private final int [] images = {R.drawable.thunderstorm,R.drawable.athmosphere,R.drawable.clear,R.drawable.clearnight,R.drawable.clouds,R.drawable.rain,R.drawable.snow};
+    IconPicker iconPicker = new IconPicker();
 
-    public WeatherReportListAdapter(Context context, ArrayList<WeatherReport> reports, int[] images) {
+    public WeatherReportListAdapter(Context context, ArrayList<WeatherReport> reports) {
         this.context = context;
         this.reports = reports;
-        this.images = images;
     }
 
     @Override
@@ -54,7 +54,6 @@ public class WeatherReportListAdapter extends BaseAdapter {
             viewHolder.weatherTV = (TextView) convertView.findViewById(R.id.weatherTextView);
             viewHolder.dateTV = (TextView) convertView.findViewById(R.id.dateTextView);
             viewHolder.weatherIconIV = (ImageView) convertView.findViewById(R.id.weatherIconImageView);
-
             result=convertView;
 
             convertView.setTag(viewHolder);
@@ -66,8 +65,7 @@ public class WeatherReportListAdapter extends BaseAdapter {
         viewHolder.degreesTV.setText(Double.toString(reports.get(position).getTemp())+ " °C");
         viewHolder.weatherTV.setText(reports.get(position).getWeather());
         viewHolder.dateTV.setText(reports.get(position).getTimestamp());
-        viewHolder.weatherIconIV.setImageResource(images[0]);
-
+        viewHolder.weatherIconIV.setImageResource(iconPicker.pickIcon(reports.get(position).getWeather(),reports.get(position).getTimestamp()));
         return convertView;
     }
 
@@ -79,4 +77,6 @@ public class WeatherReportListAdapter extends BaseAdapter {
         ImageView weatherIconIV;
 
     }
+
+
 }
