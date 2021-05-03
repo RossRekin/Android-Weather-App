@@ -16,45 +16,34 @@ import pu.fmi.rainytime.services.WeatherDataService;
 public class MainActivity extends AppCompatActivity {
 
     EditText cityET;
-    TextView locationTV,temperatureTV,forecastTV,dateTV;
-    Button dailyForecastB,weeklyForecastB,showForecastB,checKHistoryB;
+    TextView locationTV, temperatureTV, forecastTV, dateTV;
+    Button dailyForecastB, weeklyForecastB, showForecastB, checkHistoryB;
+    final WeatherDataService weatherDataService = new WeatherDataService(MainActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cityET=findViewById(R.id.cityEditText);
-        locationTV=findViewById(R.id.locationTextView);
-        temperatureTV=findViewById(R.id.temperatureTextView);
-        forecastTV=findViewById(R.id.forecastTextView);
-        dateTV=findViewById(R.id.dateTextView);
-        dailyForecastB=findViewById(R.id.dailyForecastButton);
-        checKHistoryB=findViewById(R.id.checkHistoryButton);
-        weeklyForecastB=findViewById(R.id.weekForecastButton);
-        showForecastB=findViewById(R.id.showForecastButton);
+        cityET = findViewById(R.id.cityEditText);
+        locationTV = findViewById(R.id.locationTextView);
+        temperatureTV = findViewById(R.id.temperatureTextView);
+        forecastTV = findViewById(R.id.forecastTextView);
+        dateTV = findViewById(R.id.dateTextView);
+        dailyForecastB = findViewById(R.id.dailyForecastButton);
+        checkHistoryB = findViewById(R.id.checkHistoryButton);
+        weeklyForecastB = findViewById(R.id.weekForecastButton);
+        showForecastB = findViewById(R.id.showForecastButton);
 
-        final WeatherDataService weatherDataService = new WeatherDataService(MainActivity.this);
+        getCurrentWeather("Sofia");
+
 
         showForecastB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String cityName = cityET.getText().toString();
 
-                weatherDataService.getCurrentWeather(cityName, new WeatherDataService.CurrentWeatherResponse() {
-                    @Override
-                    public void onError(String message) {
-                        Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onResponse(WeatherReport report) {
-                        locationTV.setText(report.getCity().getName());
-                        temperatureTV.setText(String.valueOf(report.getTemp()+" °C"));
-                        forecastTV.setText(report.getWeather());
-                        dateTV.setText(report.getTimestamp());
-                    }
-                });
+                getCurrentWeather(cityName);
             }
         });
 
@@ -63,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String cityName = locationTV.getText().toString();
                 Intent hourlyForecastIntent = new Intent(MainActivity.this, HourlyForecastActivity.class);
-                hourlyForecastIntent.putExtra("cityName",cityName);
+                hourlyForecastIntent.putExtra("cityName", cityName);
                 startActivity(hourlyForecastIntent);
             }
         });
@@ -73,22 +62,39 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String cityName = locationTV.getText().toString();
                 Intent weeklyForecastIntent = new Intent(MainActivity.this, WeeklyForecastActivity.class);
-                weeklyForecastIntent.putExtra("cityName",cityName);
+                weeklyForecastIntent.putExtra("cityName", cityName);
                 startActivity(weeklyForecastIntent);
             }
         });
 
         // TODO
-        checKHistoryB.setOnClickListener(new View.OnClickListener() {
+        checkHistoryB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "check history test", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
-
-
     }
+
+    private void fillDataFields(WeatherReport report) {
+        locationTV.setText(report.getCity().getName());
+        temperatureTV.setText(String.valueOf(report.getTemp() + " °C"));
+        forecastTV.setText(report.getWeather());
+        dateTV.setText(report.getTimestamp());
+    }
+
+    private void getCurrentWeather(String cityName) {
+        weatherDataService.getCurrentWeather(cityName, new WeatherDataService.CurrentWeatherResponse() {
+            @Override
+            public void onError(String message) {
+                Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(WeatherReport report) {
+                fillDataFields(report);
+            }
+        });
+    }
+
 }
