@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pu.fmi.rainytime.database.DbHelper;
 import pu.fmi.rainytime.models.IconPicker;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView forecastIV;
     final WeatherDataService weatherDataService = new WeatherDataService(MainActivity.this);
     final IconPicker iconPicker = new IconPicker();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,41 +44,33 @@ public class MainActivity extends AppCompatActivity {
         getCurrentWeather("Sofia");
 
 
-        showForecastB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String cityName = cityET.getText().toString();
-
+        showForecastB.setOnClickListener(v -> {
+            String cityName = cityET.getText().toString();
+            if (cityName.isEmpty()){
+                Toast.makeText(this, "Please Enter a Location", Toast.LENGTH_SHORT).show();
+            }else {
                 getCurrentWeather(cityName);
             }
+            });
+
+        dailyForecastB.setOnClickListener(v -> {
+            String cityName = locationTV.getText().toString();
+            Intent hourlyForecastIntent = new Intent(MainActivity.this, HourlyForecastActivity.class);
+            hourlyForecastIntent.putExtra("cityName", cityName);
+            startActivity(hourlyForecastIntent);
         });
 
-        dailyForecastB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String cityName = locationTV.getText().toString();
-                Intent hourlyForecastIntent = new Intent(MainActivity.this, HourlyForecastActivity.class);
-                hourlyForecastIntent.putExtra("cityName", cityName);
-                startActivity(hourlyForecastIntent);
-            }
-        });
-
-        weeklyForecastB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String cityName = locationTV.getText().toString();
-                Intent weeklyForecastIntent = new Intent(MainActivity.this, WeeklyForecastActivity.class);
-                weeklyForecastIntent.putExtra("cityName", cityName);
-                startActivity(weeklyForecastIntent);
-            }
+        weeklyForecastB.setOnClickListener(v -> {
+            String cityName = locationTV.getText().toString();
+            Intent weeklyForecastIntent = new Intent(MainActivity.this, WeeklyForecastActivity.class);
+            weeklyForecastIntent.putExtra("cityName", cityName);
+            startActivity(weeklyForecastIntent);
         });
 
         // TODO
-        checkHistoryB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "check history test", Toast.LENGTH_SHORT).show();
-            }
+        checkHistoryB.setOnClickListener(v -> {
+            Intent seachHistoryIntent = new Intent(MainActivity.this, SearchHistoryActivity.class);
+            startActivity(seachHistoryIntent);
         });
     }
 

@@ -18,6 +18,7 @@ public class HourlyForecastActivity extends AppCompatActivity {
     ListView hourlyForecastLV;
     WeatherReportListAdapter listAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

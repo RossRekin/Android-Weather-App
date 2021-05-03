@@ -17,8 +17,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import pu.fmi.rainytime.MainActivity;
+import pu.fmi.rainytime.database.DbHelper;
 import pu.fmi.rainytime.enums.Period;
 import pu.fmi.rainytime.models.City;
+import pu.fmi.rainytime.models.Search;
 import pu.fmi.rainytime.models.VolleySingleton;
 import pu.fmi.rainytime.models.WeatherReport;
 
@@ -26,9 +29,11 @@ import pu.fmi.rainytime.models.WeatherReport;
 public class WeatherDataService {
     Context context;
     private static final String ACCESS_TOKEN = "";
+    final DbHelper dbHelper;
 
     public WeatherDataService(Context context) {
         this.context = context;
+        dbHelper = new DbHelper(context);
     }
 
     // Used for callback
@@ -108,6 +113,7 @@ public class WeatherDataService {
                             weatherReport.setTemp(temperature);
                             weatherReport.setTimestamp(timestamp);
                             weatherReport.setWeather(weather);
+                            dbHelper.createSearchRecord(new Search(weatherReport.getCity().getName(),weatherReport.getTimestamp()));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

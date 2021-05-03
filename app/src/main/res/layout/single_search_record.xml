@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/searchRecord_locationTextView"
+        android:textColor="@color/black"
+        android:text="Location: Sofia"
+        android:textSize="20sp"
+        android:layout_marginTop="8dp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:id="@+id/searchRecord_timestampTextView"
+        android:textColor="@color/black"
+        android:text="timestamp: 04/05/2021"
+        android:textSize="16sp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchRecord_locationTextView"
+        android:layout_alignLeft="@+id/searchRecord_locationTextView"
+        android:layout_alignStart="@+id/searchRecord_locationTextView" />
+
+    <Button
+        android:id="@+id/deleteRecordButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/searchRecord_locationTextView"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:text="delete" />
+
+
+</RelativeLayout>

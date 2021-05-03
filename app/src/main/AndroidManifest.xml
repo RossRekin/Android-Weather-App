@@ -3,7 +3,7 @@
     package="pu.fmi.rainytime">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RainyTime"
         android:usesCleartextTraffic="true">
-        <activity android:name=".HourlyForecastActivity"></activity>
+        <activity android:name=".SearchHistoryActivity"></activity>
+        <activity android:name=".HourlyForecastActivity" />
         <activity android:name=".WeeklyForecastActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
