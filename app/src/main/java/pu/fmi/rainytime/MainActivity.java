@@ -10,10 +10,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import pu.fmi.rainytime.models.City;
-import pu.fmi.rainytime.models.HourlyForecastActivity;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.services.WeatherDataService;
 
@@ -62,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // TODO
         dailyForecastB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

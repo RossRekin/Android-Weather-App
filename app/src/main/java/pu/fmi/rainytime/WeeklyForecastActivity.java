@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import pu.fmi.rainytime.enums.Period;
 import pu.fmi.rainytime.models.WeatherReport;
 import pu.fmi.rainytime.models.WeatherReportListAdapter;
 import pu.fmi.rainytime.services.WeatherDataService;
@@ -25,7 +26,7 @@ public class WeeklyForecastActivity extends AppCompatActivity {
         String cityName = getIntent().getStringExtra("cityName");
         final WeatherDataService weatherDataService = new WeatherDataService(WeeklyForecastActivity.this);
 
-        weatherDataService.getWeeklyWeather(cityName, new WeatherDataService.PeriodicWeatherForecastResponse() {
+        weatherDataService.getPeriodicWeather(cityName, new WeatherDataService.PeriodicWeatherForecastResponse() {
             @Override
             public void onError(String message) {
                 Toast.makeText(WeeklyForecastActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -39,6 +40,6 @@ public class WeeklyForecastActivity extends AppCompatActivity {
                 listAdapter = new WeatherReportListAdapter(WeeklyForecastActivity.this,reports,images);
                 weeklyForecastLV.setAdapter(listAdapter);
             }
-        });
+        }, Period.WEEKLY);
     }
 }

@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import pu.fmi.rainytime.enums.Period;
 import pu.fmi.rainytime.models.City;
 import pu.fmi.rainytime.models.VolleySingleton;
 import pu.fmi.rainytime.models.WeatherReport;
@@ -76,6 +77,7 @@ public class WeatherDataService {
         VolleySingleton.getInstance(context).addToRequestQueue(request);
     }
 
+
     public void getCurrentWeather(String cityName, CurrentWeatherResponse currentWeatherResponse) {
         WeatherReport weatherReport = new WeatherReport();
 
@@ -120,7 +122,7 @@ public class WeatherDataService {
         });
     }
 
-    public void getWeeklyWeather(String cityName, PeriodicWeatherForecastResponse weeklyWeatherResponse) {
+    public void getPeriodicWeather(String cityName, PeriodicWeatherForecastResponse periodicWeatherForecastResponse, Period period) {
         ArrayList<WeatherReport> reports = new ArrayList<WeatherReport>();
 
         this.getCityCoords(cityName, new CityCoordsResponse() {
@@ -141,81 +143,46 @@ public class WeatherDataService {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray weeklyWeatherData = response.getJSONArray("daily");
-                            for (int i = 0; i < 8; i++) {
-                                JSONObject currentDay = weeklyWeatherData.getJSONObject(i);
-                                temperature = currentDay.getJSONObject("temp").getDouble("day");
-                                temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
-                                weather = currentDay.getJSONArray("weather").getJSONObject(0).getString("main");
-                                dt = currentDay.getLong("dt");
-                                timezone_offset = response.getInt("timezone_offset");
-                                timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy", timezone_offset);
-                                WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
-                                reports.add(currentReport);
+                            if (period == Period.WEEKLY) {
+                                JSONArray weeklyWeatherData = response.getJSONArray("daily");
+                                for (int i = 0; i < 8; i++) {
+                                    JSONObject currentDay = weeklyWeatherData.getJSONObject(i);
+                                    temperature = currentDay.getJSONObject("temp").getDouble("day");
+                                    temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
+                                    weather = currentDay.getJSONArray("weather").getJSONObject(0).getString("main");
+                                    dt = currentDay.getLong("dt");
+                                    timezone_offset = response.getInt("timezone_offset");
+                                    timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy", timezone_offset);
+                                    WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
+                                    reports.add(currentReport);
+                                }
+                            } else if (period == Period.HOURLY) {
+                                JSONArray hourlyWeatherData = response.getJSONArray("hourly");
+                                for (int i = 0; i < 24; i++) {
+                                    JSONObject currentHour = hourlyWeatherData.getJSONObject(i);
+                                    temperature = currentHour.getDouble("temp");
+                                    temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
+                                    weather = currentHour.getJSONArray("weather").getJSONObject(0).getString("main");
+                                    dt = currentHour.getLong("dt");
+                                    timezone_offset = response.getInt("timezone_offset");
+                                    timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy HH:mm", timezone_offset);
+                                    WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
+                                    reports.add(currentReport);
+                                }
                             }
-                            //Toast.makeText(context, weeklyWeatherData.getJSONObject(2).getString("dt"), Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        weeklyWeatherResponse.onResponse(reports);
+                        periodicWeatherForecastResponse.onResponse(reports);
                     }
                 }, error -> {
-                    weeklyWeatherResponse.onError("Something went wrong.");
+                    periodicWeatherForecastResponse.onError("Something went wrong.");
                 });
 
                 VolleySingleton.getInstance(context).addToRequestQueue(request);
             }
         });
     }
-
-    public void getHourlyWeather(String cityName, PeriodicWeatherForecastResponse hourlyWeatherResponse) {
-        ArrayList<WeatherReport> reports = new ArrayList<WeatherReport>();
-
-        this.getCityCoords(cityName, new CityCoordsResponse() {
-            @Override
-            public void onError(String message) {
-                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(City responseCity) {
-                String url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + responseCity.getLatitude() + "&lon=" + responseCity.getLongitude() + "&appid=" + ACCESS_TOKEN;
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    String timestamp, weather = "";
-                    double temperature = 0;
-                    long dt = 0;
-                    int timezone_offset = 0;
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray hourlyWeatherData = response.getJSONArray("hourly");
-                            for (int i = 0; i < 24; i++) {
-                                JSONObject currentHour = hourlyWeatherData.getJSONObject(i);
-                                temperature = currentHour.getDouble("temp");
-                                temperature = Math.round(temperature * 100.0) / 100.0 - 272.15;
-                                weather = currentHour.getJSONArray("weather").getJSONObject(0).getString("main");
-                                dt = currentHour.getLong("dt");
-                                timezone_offset = response.getInt("timezone_offset");
-                                timestamp = calculateDateFromUnixTime(dt, "dd/MM/yyyy HH:mm", timezone_offset);
-                                WeatherReport currentReport = new WeatherReport(responseCity, weather, temperature, timestamp);
-                                reports.add(currentReport);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        hourlyWeatherResponse.onResponse(reports);
-                    }
-                }, error -> {
-                    hourlyWeatherResponse.onError("Something went wrong.");
-                });
-
-                VolleySingleton.getInstance(context).addToRequestQueue(request);
-            }
-        });
-    }
-
 
     private String calculateTime(int timezoneOffset) {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
